@@ -1,0 +1,30 @@
+# Anotações para o projeto Final
+
+	- Projeto de exemplo: https://s3.amazonaws.com/content.udacity-data.com/courses/ud651/diamondsExample_2016-05.html
+
+	- Outros projetos: Estes projetos vão além do material dado pelo curso, e nós esperamos que eles sirvam de inspiração para você trabalhar com dados de seu interesse. Também esperamos que você faça perguntas igualmente interessantes.
+		- https://s3.amazonaws.com/udacity-hosted-downloads/ud651/AtlanticHurricaneTracking.html
+		- https://s3.amazonaws.com/udacity-hosted-downloads/ud651/GeographyOfAmericanMusic.html
+		
+	- Datasets: https://docs.google.com/document/d/1jX3vzkFuFOBGUrlcQ_Lc3jEZVlC_2yyk3tFIbwAI5GQ/edit?usp=sharing
+	- Instruções detalhadas sobre o projeto: https://classroom.udacity.com/nanodegrees/nd025-br/parts/1d4aac80-bb6d-4b43-a0a5-b8e9e7d8beaa/modules/316518875375461/lessons/3165188753239847/concepts/31733788120923
+	- Checklist de Review do projeto: https://review.udacity.com/#!/rubrics/293/view
+	
+		
+	Objetivos:
+		Entender a 'distribuição' de uma variável e como verificar a existência de 'anomalias e outliers'
+		Aprender como quantificar e visualizar variáveis de um conjunto de dados usando os gráficos apropriados, como 'gráficos de dispersão, histogramas, gráficos de barra e box-plots'
+		Explorar variáveis para 'identificar as mais importantes' e seus relacionamentos dentro de um conjunto de dados antes de construir um modelo preditivo; 'calcular correlações' e conduzir investigações condicionais
+		Aprender métodos poderosos e visualizações para examinar o 'relacionamento entre múltiplas variáveis', como a reformatação de tabelas e o uso de cores e formas para descobrir ainda mais informações
+
+		
+# Configuração		
+			
+	Nós recomendamos abrir o R Studio e instalar os seguintes pacotes usando a linha de comando.
+
+	install.packages("ggplot2", dependencies = T) 
+	install.packages("knitr", dependencies = T)
+	install.packages("dplyr", dependencies = T)
+	
+	
+	
