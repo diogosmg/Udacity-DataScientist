@@ -1,24 +1,49 @@
-T√çTULO por SEU_NOME_AQUI
+An·lise de Qualidade de Vinhos Tintos por Diogo da Silva Magalh„es Gomes
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Carregue aqui todos os pacotes utilizados 
-# na sua an√°lise realizada neste arquivo fonte.
+# na sua analise realizada neste arquivo fonte.
 
-# Note que o par√¢metro "echo" foi definido como FALSE neste c√≥digo.
-# Isso previne que o c√≥digo apresente resultados formatados em HTML.
-# Voc√™ deve definir echo=FALSE para todos os blocos de c√≥digo no seu arquivo.
+# Note que o parametro "echo" foi definido como FALSE neste codigo.
+# Isso previne que o codigo apresente resultados formatados em HTML.
+# Voc√™ deve definir echo=FALSE para todos os blocos de codigo no seu arquivo.
+
+install.packages("ggplot2", dependencies = T) 
+install.packages("knitr", dependencies = T)
+install.packages("dplyr", dependencies = T)
 
 library(ggplot2)
+library(dplyr)
+library(knitr)
 ```
 
+Carregamento dos Dados
 ```{r echo=FALSE, Load_the_Data}
 # Carregamento dos dados
+wineDataset <- read.csv('wineQualityReds.csv')
+```
+
+### Analisando algumas estatÌsticas do Dataset
+```{r echo=FALSE, stats1}
+# Carregamento dos dados
+str(wineDataset)
+```
+
+```{r echo=FALSE, stats2}
+summary(wineDataset)
+```
+
+```{r}
+
 
 ```
 
-# Se√ß√£o de Gr√°ficos Univariados
+
+# SeÁ„o de Gr·ficos Univariados
 ```{r echo=FALSE, Univariate_Plots}
+
+
 
 ```
 
