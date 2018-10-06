@@ -229,8 +229,22 @@ corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
 ### Scatterplots
 Vamos analisar alguns scatterplots das propriedades de entrada com a variável `quality`
 
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data = wineDataset, aes(x = quality, y = fixed.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red')
+```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+grid.arrange(
+  ggplot(data = wineDataset, aes(x = quality, y = fixed.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = volatile.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = citric.acid)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = residual.sugar)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = chlorides)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = free.sulfur.dioxide)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = total.sulfur.dioxide)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = density)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = pH)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = sulphates)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ggplot(data = wineDataset, aes(x = quality, y = alcohol)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
+  ncol=4
+)
+
 
 ```
 
