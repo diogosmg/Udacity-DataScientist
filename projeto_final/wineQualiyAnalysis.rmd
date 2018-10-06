@@ -1,6 +1,17 @@
 Análise de Qualidade de Vinhos Tintos por Diogo da Silva Magalhães Gomes
 ========================================================
 
+## Objetivos
+
+  O dataset 'Análise de Qualidade de Vinhos Tintos' foi selecionado em função de sua boa composição no conjunto de variáveis, e por sua boa didática na representação de conceitos que apresentem maior familiaridade para seu entendimento. 
+
+Os objetivos na elaboração deste trabalho são:
+- Entender a 'distribuição' de uma variável e como verificar a existência de 'anomalias e outliers'.
+- Aprender como quantificar e visualizar variáveis de um conjunto de dados usando os gráficos apropriados, como 'gráficos de dispersão, histogramas, gráficos de barra e box-plots'.
+- Explorar variáveis para 'identificar as mais importantes' e seus relacionamentos dentro de um conjunto de dados antes de construir um modelo preditivo; 'calcular correlações' e conduzir investigações condicionais.
+- Aprender métodos poderosos e visualizações para examinar o 'relacionamento entre múltiplas variáveis', como a reformatação de tabelas e o uso de cores e formas para descobrir ainda mais informações.
+
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Carregue aqui todos os pacotes utilizados 
 # na sua analise realizada neste arquivo fonte.
@@ -9,13 +20,17 @@ Análise de Qualidade de Vinhos Tintos por Diogo da Silva Magalhães Gomes
 # Isso previne que o codigo apresente resultados formatados em HTML.
 # VocÃª deve definir echo=FALSE para todos os blocos de codigo no seu arquivo.
 
-install.packages("ggplot2", dependencies = T) 
-install.packages("knitr", dependencies = T)
-install.packages("dplyr", dependencies = T)
-
+#install.packages("ggplot2", dependencies = T) 
+#install.packages("knitr", dependencies = T)
+#install.packages("dplyr", dependencies = T)
+#install.packages("GGally", dependencies = T)
+#install.packages("corrplot", dependencies = T)
+library(corrplot)
 library(ggplot2)
 library(dplyr)
 library(knitr)
+library(GGally)
+library(gridExtra)
 ```
 
 Carregamento dos Dados
@@ -25,46 +40,203 @@ wineDataset <- read.csv('wineQualityReds.csv')
 ```
 
 ### Analisando algumas estatísticas do Dataset
+Inicialmente, serão analisadas rapidamente a estrutura geral e algumas estatísticas sobre o Dataset.
+
+
 ```{r echo=FALSE, stats1}
-# Carregamento dos dados
+
 str(wineDataset)
 ```
+
+Visualização de algumas estatísticas do Dataset.
 
 ```{r echo=FALSE, stats2}
 summary(wineDataset)
 ```
 
-```{r}
-
-
-```
-
-
 # Seção de Gráficos Univariados
-```{r echo=FALSE, Univariate_Plots}
+O primeiro passo, portanto, é visualizar a distribuição de cada variável, a fim de se obter uma visão geral sobre cada uma delas.
 
+
+Primeiramente, cabe analisar o histograma para a variável `quality`. 
+```{r echo=FALSE, Univariate_Plots}
+#qplot(x = quality, data = wineDataset, bins=16)
+
+ggplot(data = wineDataset,
+       aes(x = quality)) +
+  #geom_histogram(bins = 8)
+  geom_bar(color = 'black',fill = I('skyblue4'))
+
+```
+
+Observa-se que a curva do gráfico assemelha-se a uma distribuição normal. Cabe ressaltar, portanto, uma grande concentração de avaliações em torno das notas 5-6. Isto demonstra haver poucos exemplos de vinhos de qualidade ótima. Espero que apesar do número baixo de exemplares nessas condições, seja possível inferir as relações das propriedades que determinam esse requisito.
+
+```{r, echo=FALSE, Univariate_Plots}
+length(subset(wineDataset, quality == 2)$quality)
+length(subset(wineDataset, quality == 3)$quality)
+length(subset(wineDataset, quality == 8)$quality)
+length(subset(wineDataset, quality == 9)$quality)
+
+# quantidade de ocorrencias para cada avaliacao de qualidade
+table(wineDataset$quality)
+
+```
+
+
+Dando prosseguimento na análise, plotando um gráfico de histograma para cada uma das variáveis. Observa-se que algumas variáveis estão normalmente distribuídas, enquanto outras não.
+
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = fixed.acidity), data = wineDataset) +
+  geom_histogram(binwidth = 0.5  ,fill = I('skyblue4'), color = 'black')
+
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = volatile.acidity), data = wineDataset) +
+  geom_histogram(binwidth=0.05, fill = I('skyblue4'), color = 'black')
+
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = citric.acid), data = wineDataset) +
+  geom_histogram(binwidth = 0.05  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = residual.sugar), data = wineDataset) +
+  geom_histogram(binwidth = 0.5  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = chlorides), data = wineDataset) +
+  geom_histogram(binwidth = 0.01  ,fill = I('skyblue4'), color = 'black')
+```
+
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = free.sulfur.dioxide), data = wineDataset) +
+  geom_histogram(binwidth = 1  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = total.sulfur.dioxide), data = wineDataset) +
+  geom_histogram(binwidth = 5  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = density), data = wineDataset) +
+  geom_histogram(binwidth = 0.001  ,fill = I('skyblue4'), color = 'black')
+
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = pH), data = wineDataset) +
+  geom_histogram(binwidth = 0.1  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = sulphates), data = wineDataset) +
+  geom_histogram(binwidth = 0.1  ,fill = I('skyblue4'), color = 'black')
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+ggplot(aes(x = alcohol), data = wineDataset) +
+  geom_histogram(binwidth = 0.5  , fill = I('skyblue4'), color = 'black')
+```
+
+## Plotando o gráfico BoxPlot para cada variável
+
+
+```{r, echo=FALSE, BoxPlors}
+grid.arrange(
+  ggplot(aes(y = fixed.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = volatile.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = citric.acid), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = residual.sugar), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = chlorides), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = free.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = total.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = density), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = pH), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = sulphates), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = alcohol), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ncol=4
+)
 
 
 ```
+
 
 # AnÃ¡lise Univariada
 
 ### Qual Ã© a estrutura do conjunto de dados?
+Observam-se a existência de 13 variáveis no dataset, contendo o total de 1599 linhas de análises de vinhos tintos. Porém, a primeira coluna `X` refere-se ao código da observação, e não deve contribuir com informações úteis para a análise. 
+Portanto, há 11 propriedades químicas utilizadas como critérios para determinar a qualidade do vinho, associado à variável `quality`, correspondento portanto ao fator de qualidade atribuído a cada amostra. Observa-se que essa variável é caracterizada por valores discretos, variando na prática entre 3 (mínimo) e 8 (máximo) neste dataset.
 
-### Quais sÃ£o os principais atributos de interesse deste conjunto de dados?
+### Quais são os principais atributos de interesse deste conjunto de dados?
+O principal atributo do dataset é a variável `quality`, que determina de fato a qualidade da avaliação para cada amostra do dataset.
+Cabe analisar de que maneira cada uma das outras variáveis pode contribuir de forma positiva ou negativa para esse critério de qualidade
 
-### Quais outros atributos vocÃª acha que podem lhe auxiliar na investigaÃ§Ã£o destes atributos de interesse?
+### Quais outros atributos você acha que podem lhe auxiliar na investigação destes atributos de interesse?
+Nessa fase, as percepções são ainda emíricas, devendo-se analisar matematicamente a forma como as variáveis contribuem para a qualidade. Porém, em uma análise prévia, suspeito que a a similaridade dos histogramas das variáveis `pH`, `density` e `alcohol` com a variável `quality` possam indicar alguma relação.
 
-### VocÃª criou novas variÃ¡veis a partir dos atributos existentes no conjunto de dados?
+### VocÃª criou novas variáveis a partir dos atributos existentes no conjunto de dados?
+Neste momento inicial, não achei necessário criar novas variáveis, o que pode vir a ser realizado no decorrer da análise.
 
-### Dos atributos investigados, distribuiÃ§Ãµes incomuns foram encontradas? VocÃª aplicou operaÃ§Ãµes nos dados para limpÃ¡-los, ajustÃ¡-los ou mudar a forma dos dados? Se sim, por quÃª?
+### Dos atributos investigados, distribuições incomuns foram encontradas? Você aplicou operações nos dados para limpá-los, ajustá-los ou mudar a forma dos dados? Se sim, por quê?
+Cabe destacar a forma como se concentram as avaliações de vinhos para a variável `quality`. Nota-se que que uma enorme quantidade de avaliações está atribuída entre os valores 5 e 6. Não há nenhuma avaliação menor que 3 ou maior que 8. Ainda assim, há poucos exemplos de avaliações com nota 3 (10 linhas) e apenas 18 com nota 8. Espero que o baixo número baixo de exemplares para essas condições não comprometa a análise.
+
+Pelo gráfico de BoxPlot é possível observar a presença de outliers em todas as variáveis. As variáveis `alcohol` e `density` possuem relativamente poucos outliers, enquanto o boxplor das variáveis `chlorides` e `residual.sugar` demonstram a forte presença de outliers.
+
+Algumas distribuições são normais, como `density`, `pH` e a própria variável `quality`. Outras variáveis possuem uma forma semelhante à distribuição normal, porém ainda com muitos outliers criando uma cauda longa, como `chlorides` e `residual.sugar`. Neste ponto, cabe ressaltar a natureza conceitual da variável pH, que naturalmente é expressa na base log10.
 
 
+# Seção de Gráficos Bivariados
+Inicialmente, vamos observar a tabela de correlação entre as variáveis.
+Neste ponto, é conveniente eliminar a variável X, que não contribui com informações úteis para a análise.
 
-# SeÃ§Ã£o de GrÃ¡ficos Bivariados
 ```{r echo=FALSE, Bivariate_Plots}
+wineDataset$X <- NULL
+```
+
+```{r echo=FALSE, Bivariate_Plots}
+res <- cor(wineDataset)
+round(res, 2)
+```
+
+A tabela mostra as correlações entre as variáveis utilizando-se o método PEARSON. Este coeficiente varia no intervalo de -1 (forte correlação negativa) a 1 (forte correlação positiva), sendo o valor 0 indicativo que não há correlação entre as variáveis.
+
+Embora seja possível observar algumas informações úteis, porém fica difícil a visualização como um todo. 
+Na tabela abaixo, vamos nos concentrar nas correlações das propriedades de entrada com a variável `quality`.
+
+```{r echo=FALSE, Bivariate_Plots}
+res2 <- cor(x=wineDataset[,0:11], y=wineDataset$quality)
+round(res2, 2)
+```
+
+Vamos agora buscar uma interpretação mais visual.
+
+```{r echo=FALSE, Bivariate_Plots}
+corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
+```
+- Em um primeiro momento, procuramos observar quais variáveis estariam mais diretamente correlacionadas com a variável de qualidade, Analisando o gráfico, observa-se que a variável `quality` possui correlação com `alcohol`, `sulphates` e `citric.acid`. Por outro lado, possui uma forte correlação negativa com `volatile.acid`, o que quer dizer que tanto maior é o valor desta propriedade, menor é a qualidade do vinho. 
+
+- Pode-se perceber também a correlação entre variáveis de entrada, como `fixed.acidity` e `density`, `citric.acid` e `fixed.acid`, `free.sulfur.dioxide` e `total.sulfur.dioxide`. 
+- Há ainda correlações negativas entre `pH` e `fixed.acid`, `density` e `alcohol`. `citric.acid` e `pH`.  
+
+
+### Scatterplots
+Vamos analisar alguns scatterplots das propriedades de entrada com a variável `quality`
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data = wineDataset, aes(x = quality, y = fixed.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red')
 
 ```
+
+
+
+
 
 # AnÃ¡lise Bivariada
 
