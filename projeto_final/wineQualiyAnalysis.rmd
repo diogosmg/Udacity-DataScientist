@@ -6,6 +6,7 @@ Análise de Qualidade de Vinhos Tintos por Diogo da Silva Magalhães Gomes
   O dataset 'Análise de Qualidade de Vinhos Tintos' foi selecionado em função de sua boa composição no conjunto de variáveis, e por sua boa didática na representação de conceitos que apresentem maior familiaridade para seu entendimento. 
 
 Os objetivos na elaboração deste trabalho são:
+
 - Entender a 'distribuição' de uma variável e como verificar a existência de 'anomalias e outliers'.
 - Aprender como quantificar e visualizar variáveis de um conjunto de dados usando os gráficos apropriados, como 'gráficos de dispersão, histogramas, gráficos de barra e box-plots'.
 - Explorar variáveis para 'identificar as mais importantes' e seus relacionamentos dentro de um conjunto de dados antes de construir um modelo preditivo; 'calcular correlações' e conduzir investigações condicionais.
@@ -25,6 +26,7 @@ Os objetivos na elaboração deste trabalho são:
 #install.packages("dplyr", dependencies = T)
 #install.packages("GGally", dependencies = T)
 #install.packages("corrplot", dependencies = T)
+#install.packages("rmarkdown")
 library(corrplot)
 library(ggplot2)
 library(dplyr)
@@ -34,7 +36,6 @@ library(gridExtra)
 library(grid)
 ```
 
-Carregamento dos Dados
 ```{r echo=FALSE, Load_the_Data}
 # Carregamento dos dados
 wineDataset <- read.csv('wineQualityReds.csv')
@@ -59,7 +60,8 @@ summary(wineDataset)
 O primeiro passo, portanto, é visualizar a distribuição de cada variável, a fim de se obter uma visão geral sobre cada uma delas.
 
 
-Primeiramente, cabe analisar o histograma para a variável `quality`. 
+Primeiramente, cabe analisar o histograma para a variável `quality`, que é a nossa variável de interesse para esse dataset.
+
 ```{r echo=FALSE, Univariate_Plots}
 #qplot(x = quality, data = wineDataset, bins=16)
 
@@ -70,23 +72,24 @@ grafico1 = ggplot(data = wineDataset, aes(x = quality)) +
 grafico1
 ```
 
-Observa-se que a curva do gráfico assemelha-se a uma distribuição normal. Cabe ressaltar, portanto, uma grande concentração de avaliações em torno das notas 5-6. Isto demonstra haver poucos exemplos de vinhos de qualidade ótima. Espero que apesar do número baixo de exemplares nessas condições, seja possível inferir as relações das propriedades que determinam esse requisito.
+Observa-se que a curva do gráfico assemelha-se a uma distribuição normal. Cabe ressaltar, portanto, uma grande concentração de avaliações em torno das notas 5-6. Isto demonstra haver poucos exemplos de vinhos de qualidade ótima. Espero que apesar do número baixo de exemplares nessas condições, seja possível inferir as relações das propriedades que determinam esse requisito de qualidade.
 
-```{r, echo=FALSE, Univariate_Plots}
-length(subset(wineDataset, quality == 2)$quality)
-length(subset(wineDataset, quality == 3)$quality)
-length(subset(wineDataset, quality == 8)$quality)
-length(subset(wineDataset, quality == 9)$quality)
+```{r, echo=FALSE}
+#length(subset(wineDataset, quality == 2)$quality)
+#length(subset(wineDataset, quality == 3)$quality)
+#length(subset(wineDataset, quality == 8)$quality)
+#length(subset(wineDataset, quality == 9)$quality)
 
 # quantidade de ocorrencias para cada avaliacao de qualidade
+print("Quantidade de observações no dataset para cada fator de qualidade (entre 3 e 8)")
 table(wineDataset$quality)
 
 ```
 
 
-Dando prosseguimento na análise, plotando um gráfico de histograma para cada uma das variáveis. Observa-se que algumas variáveis estão normalmente distribuídas, enquanto outras não.
+Dando prosseguimento na análise, vamos plotar um gráfico de histograma para cada uma das variáveis. Observa-se que algumas variáveis estão normalmente distribuídas, enquanto outras não.
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 
 histograma <- function(variavel, nomeVariavel, unidadeVariavel, binw) {
   return(
@@ -99,54 +102,57 @@ histograma <- function(variavel, nomeVariavel, unidadeVariavel, binw) {
 ```
 
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$fixed.acidity, "Fixed Acidity", "g / dm^3", 0.5)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$volatile.acidity, "Volatile Acidity", "g / dm^3", 0.05)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$citric.acid, "citric acid", "g / dm^3", 0.05)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$residual.sugar, "residual sugar", "g / dm^3", 0.5)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$chlorides, "chlorides", "g / dm^3", 0.01)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$free.sulfur.dioxide, "free sulfur dioxide", "mg / dm^3", 1)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$total.sulfur.dioxide, "total sulfur dioxide", "mg / dm^3", 5)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$density, "density", "g / dm^3", 0.001)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$pH, "pH", " ", 0.1)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$sulphates, "sulphates", "g / dm3", 0.1)
 ```
 
-```{r, echo=FALSE, Univariate_Plots}
+```{r, echo=FALSE}
 histograma(wineDataset$alcohol, "alcohol", "%", 0.5)
 ```
 
-## Plotando o gráfico BoxPlot para cada variável
 
 
-```{r, echo=FALSE, BoxPlors}
+### BoxPlot para cada variável
+Neste ponto, é interessante plotar também uma matriz contendo o gráfico de boxplot para cada variável, a fim de visualizar algumas informações estatísticas sobre a distribuição e verificar a presença de outliers.
+
+
+```{r, echo=FALSE, BoxPlots}
 grid.arrange(
   ggplot(aes(y = fixed.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
   ggplot(aes(y = volatile.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
@@ -167,33 +173,35 @@ grid.arrange(
 
 # Análise Univariada
 
-### Qual Ã© a estrutura do conjunto de dados?
-Observam-se a existência de 13 variáveis no dataset, contendo o total de 1599 linhas de análises de vinhos tintos. Porém, a primeira coluna `X` refere-se ao código da observação, e não deve contribuir com informações úteis para a análise. 
-Portanto, há 11 propriedades químicas utilizadas como critérios para determinar a qualidade do vinho, associado à variável `quality`, correspondento portanto ao fator de qualidade atribuído a cada amostra. Observa-se que essa variável é caracterizada por valores discretos, variando na prática entre 3 (mínimo) e 8 (máximo) neste dataset.
+### Qual é a estrutura do conjunto de dados?
+Observa-se que o dataset é composto por 13 colunas, contendo o total de 1599 linhas de análises de vinhos tintos. 
+Porém, a primeira coluna (variável `X`) refere-se ao código da observação, e não deve contribuir com informações úteis para a análise. A última coluna (variável `quality`) representa a variável de interesse para este dataset, descrevendo o resultado da avaliação de qualidade atribuído para cada amostra.
+
+Portanto, há 11 propriedades químicas utilizadas como critérios para determinar a qualidade do vinho, associado à variável `quality`. Observa-se que essa variável é caracterizada por valores discretos, variando na prática entre 3 (mínimo) e 8 (máximo) neste dataset.
 
 ### Quais são os principais atributos de interesse deste conjunto de dados?
-O principal atributo do dataset é a variável `quality`, que determina de fato a qualidade da avaliação para cada amostra do dataset.
+O principal atributo do dataset é a variável `quality`, que determina o fator de qualidade atribuído para cada samostra do dataset.
 Cabe analisar de que maneira cada uma das outras variáveis pode contribuir de forma positiva ou negativa para esse critério de qualidade
 
 ### Quais outros atributos você acha que podem lhe auxiliar na investigação destes atributos de interesse?
-Nessa fase, as percepções são ainda emíricas, devendo-se analisar matematicamente a forma como as variáveis contribuem para a qualidade. Porém, em uma análise prévia, suspeito que a a similaridade dos histogramas das variáveis `pH`, `density` e `alcohol` com a variável `quality` possam indicar alguma relação.
+Nessa fase, as percepções são ainda empíricas, devendo-se analisar matematicamente a forma como as variáveis contribuem para a qualidade. Porém, em uma análise prévia, suspeito que a a similaridade dos histogramas das variáveis `pH`, `density` e `alcohol` com a variável `quality` possam indicar alguma relação, o que precisa ser confirmado em uma análise mais detalhada.
 
-### VocÃª criou novas variáveis a partir dos atributos existentes no conjunto de dados?
-Neste momento inicial, não achei necessário criar novas variáveis, o que pode vir a ser realizado no decorrer da análise.
+### Você criou novas variáveis a partir dos atributos existentes no conjunto de dados?
+Neste momento inicial não achei necessário criar novas variáveis, o que pode vir a ser realizado no decorrer da análise.
 
 ### Dos atributos investigados, distribuições incomuns foram encontradas? Você aplicou operações nos dados para limpá-los, ajustá-los ou mudar a forma dos dados? Se sim, por quê?
-Cabe destacar a forma como se concentram as avaliações de vinhos para a variável `quality`. Nota-se que que uma enorme quantidade de avaliações está atribuída entre os valores 5 e 6. Não há nenhuma avaliação menor que 3 ou maior que 8. Ainda assim, há poucos exemplos de avaliações com nota 3 (10 linhas) e apenas 18 com nota 8. Espero que o baixo número baixo de exemplares para essas condições não comprometa a análise.
+Cabe destacar a forma como se concentram as avaliações de vinhos para a variável `quality`. Nota-se que uma enorme quantidade de avaliações atribui uma nota intermediária, com valores entre 5 e 6. Não há nenhuma avaliação menor que 3 ou maior que 8. Ainda assim, há poucos exemplos de avaliações com nota 3 (apenas 10 linhas) e igualmente poucas avaliações com nota 8 (apenas 18). Espero que o baixo número de exemplares para essas condições não comprometa a análise.
 
-Pelo gráfico de BoxPlot é possível observar a presença de outliers em todas as variáveis. As variáveis `alcohol` e `density` possuem relativamente poucos outliers, enquanto o boxplor das variáveis `chlorides` e `residual.sugar` demonstram a forte presença de outliers.
+Pelo gráfico de BoxPlot é possível observar a presença de outliers em todas as variáveis. As variáveis `alcohol` e `density` possuem relativamente poucos outliers, enquanto o boxplot das variáveis `chlorides` e `residual.sugar` demonstram a forte presença de outliers.
 
-Algumas distribuições são normais, como `density`, `pH` e a própria variável `quality`. Outras variáveis possuem uma forma semelhante à distribuição normal, porém ainda com muitos outliers criando uma cauda longa, como `chlorides` e `residual.sugar`. Neste ponto, cabe ressaltar a natureza conceitual da variável pH, que naturalmente é expressa na base log10.
+Algumas distribuições são normais, como `density`, `pH` e a própria variável `quality`. Outras variáveis possuem uma forma semelhante à distribuição normal, porém ainda com muitos outliers criando uma cauda longa, como `chlorides` e `residual.sugar`. Neste ponto, cabe ressaltar a forma conceitual da variável pH, que naturalmente é expressa na base log10.
 
 
 # Seção de Gráficos Bivariados
 Inicialmente, vamos observar a tabela de correlação entre as variáveis.
 Neste ponto, é conveniente eliminar a variável X, que não contribui com informações úteis para a análise.
 
-```{r echo=FALSE, Bivariate_Plots}
+```{r}
 wineDataset$X <- NULL
 ```
 
@@ -202,35 +210,43 @@ res <- cor(wineDataset)
 round(res, 2)
 ```
 
-A tabela mostra as correlações entre as variáveis utilizando-se o método PEARSON. Este coeficiente varia no intervalo de -1 (forte correlação negativa) a 1 (forte correlação positiva), sendo o valor 0 indicativo que não há correlação entre as variáveis.
+A tabela acima mostra os coeficientes de correlação entre as variáveis utilizando-se o método PEARSON. Esse coeficiente varia no intervalo de -1 (forte correlação negativa) a 1 (forte correlação positiva), sendo o valor 0 indicativo que não há correlação entre as variáveis. NEsses termos, caso duas variáveis possuam correlação positiva, isso implica dizer que se o valor de uma variável aumenta, a outra variável também aumenta. Uma correlação negativa indica que quando uma variável aumenta, a outra decresce.
 
-Embora seja possível observar algumas informações úteis, porém fica difícil a visualização como um todo. 
+Embora seja possível observar algumas informações úteis, fica difícil obter uma mehor interpretação e visualização das correlações como um todo. 
 
-Na tabela abaixo, vamos nos concentrar nas correlações das propriedades de entrada com a variável `quality`.
+Na tabela abaixo, vamos nos concentrar apenas nas correlações das propriedades de entrada com a variável `quality`.
 
-```{r echo=FALSE, Bivariate_Plots}
+```{r echo=FALSE}
 res2 <- cor(x=wineDataset[,0:11], y=wineDataset$quality)
 round(res2, 2)
 ```
-Segundo essa tabela, as variáveis com maior correlação com a qualidade são, nesta ordem: alcohol, volatile.acidity (negativa), sulphates e citric.acid.
+
+Segundo essa tabela, as variáveis com maior correlação com a qualidade são, nesta ordem:
+
+- alcohol
+- volatile.acidity (negativa)
+- sulphates
+- citric.acid.
 
 
+### Gráfico da matriz de correlação
+Vamos agora buscar uma interpretação mais visual, usando uma representação gráfica da matriz de correlações, para melhor visualização das principais correlações.
 
-Vamos agora buscar uma interpretação mais visual, usando uma matriz de correlações.
-
-```{r echo=FALSE, Bivariate_Plots, fig.height=8, fig.width=8}
+```{r echo=FALSE, fig.height=8, fig.width=8}
 corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45, title = "\nMatriz de correlação entre as variáveis")
 ```
-- Em um primeiro momento, procuramos observar quais variáveis estariam mais diretamente correlacionadas com a variável de qualidade, Analisando o gráfico e as tabelas anteriores, observa-se que a variável `quality` possui correlação com `alcohol`, `sulphates` e `citric.acid`. Por outro lado, possui uma forte correlação negativa com `volatile.acid`, o que quer dizer que tanto maior é o valor desta propriedade, menor é a qualidade do vinho. 
 
-- Pode-se perceber também a correlação entre variáveis de entrada, como `fixed.acidity` e `density`, `citric.acid` e `fixed.acid`, `free.sulfur.dioxide` e `total.sulfur.dioxide`. 
-- Há ainda correlações negativas entre `pH` e `fixed.acid`, `density` e `alcohol`. `citric.acid` e `pH`.  
+A partir deste gráfico, podemos destacar:
+
+- Em um primeiro momento, procuramos observar quais variáveis estariam mais diretamente correlacionadas com a variável de qualidade. Analisando o gráfico e as tabelas anteriores, observa-se que a variável `quality` possui forte correlações positicas com `alcohol`, `sulphates` e `citric.acid`. 
+- Por outro lado, possui uma forte correlação negativa com `volatile.acid`, o que quer dizer que tanto maior é o valor desta propriedade, menor é a qualidade do vinho. 
+- Pode-se perceber também a correlação entre variáveis de entrada, como `fixed.acidity` e `density`, `citric.acid` e `fixed.acid`, `free.sulfur.dioxide` e `total.sulfur.dioxide`. - Há ainda correlações negativas entre `pH` e `fixed.acid`, `density` e `alcohol`. `citric.acid` e `pH`.  
 
 
 ### Scatterplots
-Vamos analisar alguns scatterplots, demonstrando  as propriedades de entrada em relação à variável `quality`
+Vamos complementar a análise usando alguns scatterplots, descrevendo as propriedades de entrada em relação à variável `quality`
 
-```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Scatterplots de cada propriedade em relação à variável ´Quality´", gp=gpar(fontface="bold"))
 
 grid.arrange(
@@ -250,25 +266,29 @@ grid.arrange(
 )
 ```
 
-OS gráficos confirmarm visualmente algumas caracteristicas anteriormente discutidas, como a forte correlação positiva entre `alcohol` e `quality`, e a correlação negativa entre `volatile.acid` e `quality`, indicando que essa variável afeta negativamente a qualidade do vinho.
+OS gráficos nos permitem visualizar algumas das caracteristicas já anteriormente discutidas, como a forte correlação positiva entre `alcohol` e `quality`. Adicionalmente, podemos verificar a correlação negativa entre `volatile.acid` e `quality`, indicando que essa variável afeta negativamente a qualidade do vinho.
 
 
 # Análise Bivariada
 
 ### Discuta sobre alguns dos relacionamentos observados nesta parte da investigação. Como os atributos de interesse variaram no conjunto de dados?
 
-PAra esta análise, observei a correlação entre as variáveis utilizando o coeficiente de correlação calculado com o método Pearson. Este coeficiente varia no intervalo de -1 (forte correlação negativa) a 1 (forte correlação positiva), sendo o valor 0 indicativo que não há correlação entre as variáveis. Utilizei esse mesmo método para calcular a correlação de cada variável com a variável de interesse `quality`, de forma a identificar quais propriedades podem influenciar mais significativamente a qualidade do vinho.
-Adicionalmente, utilizei um gráfico contendo a matriz de correlação, a fim de obter uma representação mais visual dessas relações, e assim obter uma interpretação mais rápida e fácil na identificação das correlações mais fortes (que poderiam então ser confirmadas pelos coeficientes mostrados na tabela completa).
-Em seguida, utilizei gráficos de scatterplot para observar a distribuição dos elementos de cada pripriedade com a variável `quality`.
+   Para esta análise, observei a correlação entre as variáveis utilizando o coeficiente de correlação calculado com o método Pearson. Este coeficiente varia no intervalo de -1 (forte correlação negativa) a 1 (forte correlação positiva), sendo o valor 0 indicativo que não há correlação entre as variáveis. Utilizei esse mesmo método para calcular a correlação de cada variável com a variável de interesse `quality`, de forma a identificar quais propriedades podem influenciar mais significativamente a qualidade do vinho.
 
-Com base nesses recursos, cabe destacar as variáveis com maior correlação com a qualidade do produto, nesta ordem: 
-1- alcohol
-2- volatile.acidity (correlação negativa)
-3- sulphates
-4- citric.acid.
+   Adicionalmente, utilizei um gráfico contendo a matriz de correlação, a fim de obter uma representação mais visual dessas relações e assim obter uma interpretação mais rápida e fácil na identificação das correlações mais fortes (que poderiam então ser confirmadas pelos coeficientes mostrados na tabela completa).
 
-Essa correlação pode ser visualmente observada no destaque do gráfico abaixo:
-```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+   Em seguida, utilizei gráficos de scatterplot para observar a distribuição dos elementos de cada pripriedade com a variável `quality`.
+
+   Com base nesses recursos, cabe destacar as variáveis com maior correlação com a qualidade do produto, nesta ordem: 
+   
+  - alcohol
+  - volatile.acidity (correlação negativa)
+  - sulphates
+  - citric.acid.
+
+   Essa correlação pode ser visualmente observada no destaque do gráfico abaixo:
+   
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Scatterplots das principais propriedades em relação à variável ´Quality´", gp=gpar(fontface="bold"))
 
 grid.arrange(
@@ -284,20 +304,24 @@ grid.arrange(
 
 
 ### Você observou algum relacionamento interessante entre os outros atributos (os que não são de interesse)?
+
 Cabe destacar a correlação entre algumas das propriedades observadas nas análises dos vinhos. Entre elas, destacam-se:
-Há uma forte correlação positiva entre as seguintes variáveis:
-- `fixed.acidity` e `density`
-- `fixed.acidity` e `citric.acid`
-- `free.sulfur.dioxide` e `total.sulfur.dioxide`. 
 
-Há ainda correlações negativas observadas entre 
-- `pH` e `fixed.acid`
-- `density` e `alcohol`
-- `citric.acid` e `pH`.  
+  Há uma forte correlação positiva entre as seguintes variáveis:
+    
+   - `fixed.acidity` e `density`
+   - `fixed.acidity` e `citric.acid`
+   - `free.sulfur.dioxide` e `total.sulfur.dioxide`. 
 
-Visualmente, essas correlações podem ser representadas pelo gráfico abaixo:
+  Há ainda correlações negativas observadas entre:
+  
+    - `pH` e `fixed.acid`
+    - `density` e `alcohol`
+    - `citric.acid` e `pH`.  
 
-```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+  Visualmente, essas correlações podem ser representadas pelo gráfico abaixo:
+
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Principais correlações entre propriedades - positivas (1a linha) e negativas (2a linha)", gp=gpar(fontface="bold"))
 
 grid.arrange(
@@ -311,20 +335,23 @@ grid.arrange(
   top = title1
 )
 ```
+
 ### Qual foi o relacionamento mais forte encontrado?
-O relacionamento mais forte encontrado em relação à variável de interesse `quality` foi com a variável `alcohol`, com coeficiente Pearson de 0.48. Porém, logo a seguir, a variável `volatile.acidity` apresenta coeficiente de correlação -0.39, indicando uma correlação negativa que não deve ser ignorada.
+
+   O relacionamento mais forte encontrado em relação à variável de interesse `quality` foi com a variável `alcohol`, com coeficiente Pearson de 0.48. Porém, logo a seguir, a variável `volatile.acidity` apresenta coeficiente de correlação -0.39, indicando uma correlação negativa que não deve ser ignorada.
 
 Entre as propriedades de entrada, cabe destacar o forte relacionamento encontrado entre as variáveis:
-- `fixed.acidity` e `pH`
-- `fixed.acidity` e `density`
-- `fixed.acidity` e `citric.acid`
-- `citric.acid` e `pH`
-- `free.sulfur.dioxide` e `total.sulfur.dioxide`
-- `density` e `alcohol`
- 
-Visualmente, essas correlações podems er representadas pelo gráfico abaixo:
 
-```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+   - `fixed.acidity` e `pH`
+   - `fixed.acidity` e `density`
+   - `fixed.acidity` e `citric.acid`
+   - `citric.acid` e `pH`
+   - `free.sulfur.dioxide` e `total.sulfur.dioxide`
+   - `density` e `alcohol`
+ 
+  Visualmente, essas correlações podems er representadas pelo gráfico abaixo:
+
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Relacionamentos mais fortes entre as variáveis", gp=gpar(fontface="bold"))
 
 grid.arrange(
@@ -340,23 +367,35 @@ grid.arrange(
 ```
 
 # Seção de Gráficos Multivariados
+
 Nesta seção, irei analisar a relação entre diferentes características do vinho, e como elas podem influenciar em conjunto a qualidade analisada. Em especial, inicialmente vou focar nas variáveis `alcohol` e `volatile.acidity`, que possuem maiores índices de correlação com a qualidade.
 
 Primeiramente, vamos gerar o scatterplot entre a variável `alcohol` e as demais variaveis, considerando a variavel `quality`.
-```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Correlações das propriedades analisadas com a variável ´alcohol´ em função da Qualidade ", gp=gpar(fontface="bold"))
 
 grid.arrange( 
-  ggplot(aes(x = alcohol, y = fixed.acidity), data = wineDataset) + geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = volatile.acidity), data = wineDataset) + geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25)+geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = citric.acid), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = chlorides), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = free.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = total.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = fixed.acidity), data = wineDataset) + geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = volatile.acidity), data = wineDataset) + geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25)
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = citric.acid), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = chlorides), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = free.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = total.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) 
+  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   
   ncol=2,
   top = title1
@@ -364,21 +403,34 @@ grid.arrange(
 )
 ```
 
+
 Plotando scatterplots de `volatile.acidity` e as demais varáveis.
-```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+
+
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob("Correlações das propriedades analisadas com a variável ´volatile.acidity´ em função da Qualidade ", gp=gpar(fontface="bold"))
 
 grid.arrange( 
-  ggplot(aes(x = volatile.acidity, y = fixed.acidity), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = alcohol), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = citric.acid), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = chlorides), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = free.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = total.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
-  ggplot(aes(x = volatile.acidity, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = fixed.acidity), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = alcohol), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = citric.acid), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = chlorides), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = free.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = total.sulfur.dioxide), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  ggplot(aes(x = volatile.acidity, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+    geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   
   ncol=2,
   top = title1
@@ -390,7 +442,7 @@ grid.arrange(
 Destacando especialmente a relação de `alcohol` com `volatile.acid` e com `sulphates` em relação a `quality`
 
 
-```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1 = textGrob("Correlação de `alcohol` com `volatile.acid` e com `sulphates` em relação a `quality` ", gp=gpar(fontface="bold"))
 
 
@@ -416,9 +468,9 @@ ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +
 
 Observa-se uma melhor qualidade do vinho quanto mais houver `alcohol` e menos `volatile.acidity`. Por outro lado, uma melhor qualidade é observada quanto mais houver `sulphates` e `alcohol`.
 
-Adicionalmente, vou plotar alguns BoxPlots nara verificar a relação de `alcohol` e `volatile.acidity` com a qualidade.
+Adicionalmente, vamos plotar alguns BoxPlots nara verificar a relação de `alcohol` e `volatile.acidity` com a qualidade.
 
-```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+```{r echo=FALSE, fig.height=10, fig.width=12}
 title1=textGrob(" BoxPlots de `alcohol` e `volatile.acidity` em relação à qualidade", gp=gpar(fontface="bold"))
 
 grid.arrange(
@@ -429,18 +481,26 @@ grid.arrange(
 )
 ```
 
-No gráfico abaixo, vamos nos concentrar apenas nos vinhos de pior e de melhor qualidade, descartando todas as avaliações medianas (5 e 6). O objetivo é tornar mais clara a visualização de como essas relações impactam diretamenteefetivamente na qualidade do vinho.
+No gráfico abaixo, vamos nos concentrar apenas nos vinhos de pior e de melhor qualidade, descartando todas as avaliações medianas (5 e 6). O objetivo é tornar mais clara a visualização de como essas relações impactam efetivamente na qualidade do vinho.
 
-```{r echo=FALSE, Multivariate_Plots, fig.height=8, fig.width=10}
+```{r echo=FALSE, fig.height=8, fig.width=10}
 ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
        aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
   scale_color_brewer(type='seq', palette = 'RdBu',  guide=guide_legend(title='Qualidade'))+
   geom_smooth(se = FALSE, method='lm', color='red')+
-  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',    x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
+  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", 
+       subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',   
+       x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
   geom_point()
 ```
-Esse gráfico representa visualmente como a qualidade é fortemente afetada pelos atributos `alcohol` e `volatile.acidity`. Nota-se a presença das melhores avaliações (em azul) na região onde `alcohol` é alto e `volatile.acidity` e baixo. De maneira inversa, as piores avaliações de qualidade (em vermelho) situam-se na região com baixo teor de `alcohol` e maior valor de `volatile.acidity`. 
-Portanto, podemos notar que um vinho de melhor qualidade é obtido a partir da combinação de uma alta concentração de `alcohol` com um baixo valor de `volatile.acidity`.
+
+O gráfico acima representa visualmente como a qualidade é fortemente afetada pelos atributos `alcohol` e `volatile.acidity`. 
+
+Nota-se a presença das melhores avaliações (em azul) na região onde `alcohol` é alto e `volatile.acidity` é baixo. 
+
+De maneira inversa, as piores avaliações de qualidade (em vermelho) situam-se na região com baixo teor de `alcohol` e maior valor de `volatile.acidity`.
+
+Portanto, é possível afirmar que um vinho de melhor qualidade é obtido a partir da combinação de uma alta concentração de `alcohol` com um baixo valor de `volatile.acidity`.
 
 
 ### Discuta sobre os relacionamentos observados nesta parte da investigação. Quais atributos que fortaleceram os demais na observação das variáveis de interesse?
@@ -450,39 +510,46 @@ Os gráficos de boxplot se mostraram particularmente úteis para confirmar as perc
 
 
 ### Interações surpreendentes e/ou interessantes foram encontradas entre os atributos?
-Uma interação interessante, embora não particularmente surpreendente (considerando que ela foi identificada logo no início da análise), é a forte influência do teor de álcohol para determinação de um vinho de melhor qualidade. Embora não seja conhecedor do assunto, não esperava uma relação direta tão forte.
+Uma interação particularmente interessante, embora não seja especificamente surpreendente (considerando que ela foi identificada logo no início da análise), é a forte influência do teor de álcool para determinação de um vinho de melhor qualidade. Embora não seja conhecedor do assunto, não esperava uma relação direta tão forte.
 
-Considerando um pressentimento pessoal, embora ratificando que não seja conhecedor do assunto, eu esperava identificar uma relação direta da propriedade `density` com a qualidade do vinho. Imaginando um modelo mental preconcebido, imaginava que vinhos mais densos (ditos encorpados), poderiam sugerir uma melhor qualidade. Contraditoriamente, os dados mostraram justamente uma relação inversa entre densidade e a qualidade do vinho. De forma semelhante, também esperava encontrar uma relação entre `residual.sugar` e qualidade, porém os dados confirmaram não haver correlação praticamente nenhuma entre essas variáveis, conforme novamente destacado no gráfico abaixo:
+Considerando um pressentimento pessoal, embora ratificando que não seja conhecedor do assunto, eu esperava encontrar uma relação direta da propriedade `density` com a qualidade do vinho. Curiosamente, imaginando um modelo mental preconcebido, imaginava que vinhos mais densos (que eu associava ao termo 'encorpados'), poderiam sugerir uma melhor qualidade. Contrariamente, os dados mostraram justamente uma relação inversa entre densidade e a qualidade do vinho. De forma semelhante, também esperava encontrar uma relação entre `residual.sugar` e qualidade, porém os dados confirmaram não haver correlação praticamente nenhuma entre essas variáveis, conforme novamente destacado no gráfico abaixo:
 
-```{r echo=FALSE, Multivariate_Plots, fig.height=6, fig.width=12}
+```{r echo=FALSE, fig.height=6, fig.width=12}
 title1=textGrob("Correlações de `density` e `residual sugar` em relação à qualidade", gp=gpar(fontface="bold"))
 
 grid.arrange(
   
-ggplot(aes(x = quality, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +theme(legend.position = "bottom") +geom_smooth(method='lm', color='red') + 
-scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
+ggplot(aes(x = quality, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+  theme(legend.position = "bottom") +geom_smooth(method='lm', color='red') + 
+  scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
 
-ggplot(aes(x = quality, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) + theme(legend.position = "bottom") + geom_smooth(method='lm', color='red') + 
-scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
-ncol=2,
-top=title1
+  ggplot(aes(x = quality, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) + 
+  theme(legend.position = "bottom") + geom_smooth(method='lm', color='red') + 
+  scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
+  
+  ncol=2,
+  top=title1
 
 )
 ```
 
 
 ### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitações do seu modelo.
-Vamos experimentar a criação de um modelo linear simples para tentar predizeer a qualidade do vinho a partir de suas propriedades.
+Vamos experimentar a criação de um modelo linear simples e uma árevore de decisão, para tentar predizer a qualidade do vinho a partir de suas propriedades.
+
+Primeiro, um modelo utilizando árvore de decisão (Random Forest)
 
 ```{r echo=FALSE, warning=FALSE }
 
-install.packages("randomForest", dependencies = T) 
+#install.packages("randomForest", dependencies = T) 
 library(randomForest)
 fit <- randomForest(quality ~ alcohol + volatile.acidity + sulphates + chlorides + fixed.acidity + citric.acid + pH + density ,   data=wineDataset)
 print(fit) # 
 importance(fit) # importancia de cada variável para o preditor
 
 ```
+
+Agora, vamos experimentar um modelo linear multivariável:
 
 ```{r echo=FALSE, warning=FALSE }
 
@@ -494,8 +561,13 @@ summary(lm1)
 ```   
 
 
-Tentei criar modelos de predição para a variável quality, utilizando as principais propriedades de entrada identificadas nas seções antereiores. Para isso, utilizei duas abordagens diferentes: uma regressão linear multivariável, e uma árvore de decisão RandomForest. Porém, para ambos os casos, os resultados não foram muito bons, considerando o valor final de R-squared. Porém, esse valor relativamente baixo pode ser explicado pelos gráficos Scatterplots anteriormente gerados, em que há uma distribuição muito dispersa dos valores para uma mesma qualidade, podendo influenciar assim nesse cálculo final.
+Tentei criar modelos de predição para a variável quality, utilizando as principais propriedades de entrada identificadas nas seções antereiores. Para isso, utilizei duas abordagens diferentes: uma regressão linear multivariável, e uma árvore de decisão RandomForest. 
+
+Porém, para ambos os casos, os resultados não foram muito bons, considerando o valor final de R-squared (0.327 e 0.351, respectivamente). Porém, esse valor relativamente baixo poderia ser explicado a partir dos gráficos Scatterplots anteriormente gerados, em que há uma distribuição muito dispersa dos valores para uma mesma qualidade, podendo influenciar assim no cálculo dessa métrica.
+
 Outro problema para a geração dos modelos pode ter sido a baixa representatividade de valores para os extremos da variável quality. Ou seja, há poucos exemplos para vinhos muito bem ou muito mal avaliados (notas 3 ou 8, por exemplo), e os dados existentes podem ter sido insuficientes para que o modelo conseguisse obter uma boa generalização.
+
+Portanto, a utilização de modelos preditores precisaria ser analisado com maior cautela para este dataset.
 
 ------
 
@@ -507,36 +579,46 @@ grafico1
 
 ```
 
-### Descrição do Primeiro GrÃ¡fico
+### Descrição do Primeiro Gráfico
 Este primeiro gráfico pode ser considerado o mais significativo para iniciar o processo de análise, visualizando o histograma geral de observações contidas no dataset em relação à variável  `quality`.
-Este gráfico já destacou, desde o princípio, a grande concentração em avaliações medianas, com uma relativa baixa representatividade de observações para qualidades muito boas (notas 7-8), e de qualidades muito ruins (notas 3 e 4).
+
+Este gráfico já destacou, desde o princípio, a grande concentração em avaliações medianas, com relativa baixa representatividade de observações para qualidades muito boas (notas 7-8), e para qualidades muito ruins (notas 3 e 4).
 
 
-
-### Segundo GrÃ¡fico
+### Segundo Gráfico
 ```{r echo=FALSE, Plot_Two, fig.height=10, fig.width=10}
 corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45, title = "\nMatriz de correlação entre as variáveis")
 ```
-### Descrição do Segundo Gráfico
-Esta matriz de correlação foi extremamente importante para se obter uma visão geral da forma como as variáveis estão correlacionadas. Embora eu já tivesse a tabela com os valores de correlação entre cada uma das variáveis, esse gráfico permitiu, de uma forma muito simples e intuitiva, direcionar minha atenção diretamente para as correlações mais representativas. A princípio, pude focar em quais variáveis apresentavam maior correlação com a variável de interesse `quality`. Em seguida, pude atentar para as principais correlações enter as diferentes propriedades, facilmente identificável a partir das cores e tamanhos dos itens na matriz.
 
-### Terceiro GrÃ¡fico
+### Descrição do Segundo Gráfico
+
+Esta matriz de correlação foi extremamente importante para se obter uma visão geral da forma como as variáveis estão correlacionadas. Embora eu já tivesse a tabela com os valores de correlação entre cada uma das variáveis, esse gráfico permitiu, de uma forma muito simples e intuitiva, direcionar minha atenção diretamente para as correlações mais representativas. 
+
+A princípio, pude focar em quais variáveis apresentavam maior correlação com a variável de interesse `quality`. Em seguida, pude atentar para as principais correlações entre as diferentes propriedades, facilmente identificável a partir das cores e tamanhos dos itens na matriz.
+
+### Terceiro Gráfico
 ```{r echo=FALSE, Plot_Three,  fig.height=8, fig.width=10}
 ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
        aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
   scale_color_brewer(type='seq', palette = 'RdBu',  guide=guide_legend(title='Qualidade'))+
   geom_smooth(se = FALSE, method='lm', color='red')+
-  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',    x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
+  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", 
+       subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',    
+       x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
   geom_point()
 ```
-### Descrição do Terceiro GrÃ¡fico
-Esse gráfico talvez seja o mais representativo da análise, à medida em que destaca as mais fortes correlações das propriedades `alcohol` e `volatile.acidity` com a qualidade do vinho. Uma vez caracterizado que essas propriedades são as que mais influenciam na qualidade final, é possível afirmar que um vinho tinto possui uma melhor qualidade a partir da combinação de uma maior concentração de `alcohol` com um menor valor de `volatile.acidity`.
+
+### Descrição do Terceiro Gráfico
+
+Esse gráfico talvez seja o mais representativo da análise, à medida em que destaca as mais fortes correlações das propriedades `alcohol` e `volatile.acidity`, considerando a qualidade do vinho. Uma vez caracterizado que essas propriedades são as que mais influenciam na qualidade final, é possível afirmar que um vinho tinto possui uma melhor qualidade a partir da combinação de uma maior concentração de `alcohol` com um menor valor de `volatile.acidity`.
 
 
 
 ------
 
 # Reflexão
+
 A partir dessa análise de dados exploratória, foi possível identificar, observando apenas os dados contidos nos datasets, quais as variáveis que mais influenciam para a obtenção de um vinho de melhor qualidade. Foi possível combinar a observação de coeficientes estatisticamente calculados, com sua correspondente visualização (e confirmação) em diferentes visualizações gráficas, como matrizes de correlação, scatterplots e boxplots.
+
 Como sou leigo no assunto vinhos, meu desconhecimento a princípio me deixou inseguro sobre minha capacidade de realizar uma análise a este respeito. Porém, os dados se mostraram suficientes para inferir observações importantes e contundentes a respeito das principais propriedades desse produto.
 
