@@ -31,6 +31,7 @@ library(dplyr)
 library(knitr)
 library(GGally)
 library(gridExtra)
+library(grid)
 ```
 
 Carregamento dos Dados
@@ -62,10 +63,9 @@ Primeiramente, cabe analisar o histograma para a variável `quality`.
 ```{r echo=FALSE, Univariate_Plots}
 #qplot(x = quality, data = wineDataset, bins=16)
 
-grafico1 = ggplot(data = wineDataset,
-       aes(x = quality)) +
-  #geom_histogram(bins = 8)
-  geom_bar(color = 'black',fill = I('skyblue4'))
+grafico1 = ggplot(data = wineDataset, aes(x = quality)) +
+  geom_bar(color = 'black',fill = I('skyblue4')) +
+  labs(title = "Qualidade do Vinho Tinto", subtitle = 'Quantidade de itens observados para cada fator de qualidade', x = "Qualidade (índice de 3 a 8)", y="Quantidade")
 
 grafico1
 ```
@@ -86,64 +86,61 @@ table(wineDataset$quality)
 
 Dando prosseguimento na análise, plotando um gráfico de histograma para cada uma das variáveis. Observa-se que algumas variáveis estão normalmente distribuídas, enquanto outras não.
 
-
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = fixed.acidity), data = wineDataset) +
-  geom_histogram(binwidth = 0.5  ,fill = I('skyblue4'), color = 'black')
 
-```
+histograma <- function(variavel, nomeVariavel, unidadeVariavel, binw) {
+  return(
+    ggplot(aes(x = variavel), data = wineDataset) +
+    geom_histogram(binwidth = binw  ,fill = I('skyblue4'), color = 'black') +
+    labs(title = paste("Histograma - ", nomeVariavel), x = paste(nomeVariavel, "(", unidadeVariavel, ")" ), y="Quantidade")
+  )
+}
 
-```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = volatile.acidity), data = wineDataset) +
-  geom_histogram(binwidth=0.05, fill = I('skyblue4'), color = 'black')
-
-```
-
-```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = citric.acid), data = wineDataset) +
-  geom_histogram(binwidth = 0.05  ,fill = I('skyblue4'), color = 'black')
-```
-
-```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = residual.sugar), data = wineDataset) +
-  geom_histogram(binwidth = 0.5  ,fill = I('skyblue4'), color = 'black')
-```
-
-```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = chlorides), data = wineDataset) +
-  geom_histogram(binwidth = 0.01  ,fill = I('skyblue4'), color = 'black')
 ```
 
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = free.sulfur.dioxide), data = wineDataset) +
-  geom_histogram(binwidth = 1  ,fill = I('skyblue4'), color = 'black')
+histograma(wineDataset$fixed.acidity, "Fixed Acidity", "g / dm^3", 0.5)
 ```
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = total.sulfur.dioxide), data = wineDataset) +
-  geom_histogram(binwidth = 5  ,fill = I('skyblue4'), color = 'black')
+histograma(wineDataset$volatile.acidity, "Volatile Acidity", "g / dm^3", 0.05)
 ```
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = density), data = wineDataset) +
-  geom_histogram(binwidth = 0.001  ,fill = I('skyblue4'), color = 'black')
-
+histograma(wineDataset$citric.acid, "citric acid", "g / dm^3", 0.05)
 ```
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = pH), data = wineDataset) +
-  geom_histogram(binwidth = 0.1  ,fill = I('skyblue4'), color = 'black')
+histograma(wineDataset$residual.sugar, "residual sugar", "g / dm^3", 0.5)
 ```
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = sulphates), data = wineDataset) +
-  geom_histogram(binwidth = 0.1  ,fill = I('skyblue4'), color = 'black')
+histograma(wineDataset$chlorides, "chlorides", "g / dm^3", 0.01)
 ```
 
 ```{r, echo=FALSE, Univariate_Plots}
-ggplot(aes(x = alcohol), data = wineDataset) +
-  geom_histogram(binwidth = 0.5  , fill = I('skyblue4'), color = 'black')
+histograma(wineDataset$free.sulfur.dioxide, "free sulfur dioxide", "mg / dm^3", 1)
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+histograma(wineDataset$total.sulfur.dioxide, "total sulfur dioxide", "mg / dm^3", 5)
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+histograma(wineDataset$density, "density", "g / dm^3", 0.001)
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+histograma(wineDataset$pH, "pH", " ", 0.1)
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+histograma(wineDataset$sulphates, "sulphates", "g / dm3", 0.1)
+```
+
+```{r, echo=FALSE, Univariate_Plots}
+histograma(wineDataset$alcohol, "alcohol", "%", 0.5)
 ```
 
 ## Plotando o gráfico BoxPlot para cada variável
@@ -151,25 +148,24 @@ ggplot(aes(x = alcohol), data = wineDataset) +
 
 ```{r, echo=FALSE, BoxPlors}
 grid.arrange(
-  ggplot(aes(y = fixed.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = volatile.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = citric.acid), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = residual.sugar), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = chlorides), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = free.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = total.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = density), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = pH), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = sulphates), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
-  ggplot(aes(y = alcohol), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black'),
+  ggplot(aes(y = fixed.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = volatile.acidity), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = citric.acid), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = residual.sugar), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = chlorides), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = free.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = total.sulfur.dioxide), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = density), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = pH), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = sulphates), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
+  ggplot(aes(y = alcohol), data = wineDataset) + geom_boxplot(fill = I('slategray2'), color = 'black') + theme(axis.text.x = element_blank()),
   ncol=4
 )
-
 
 ```
 
 
-# AnÃ¡lise Univariada
+# Análise Univariada
 
 ### Qual Ã© a estrutura do conjunto de dados?
 Observam-se a existência de 13 variáveis no dataset, contendo o total de 1599 linhas de análises de vinhos tintos. Porém, a primeira coluna `X` refere-se ao código da observação, e não deve contribuir com informações úteis para a análise. 
@@ -223,7 +219,7 @@ Segundo essa tabela, as variáveis com maior correlação com a qualidade são, nest
 Vamos agora buscar uma interpretação mais visual, usando uma matriz de correlações.
 
 ```{r echo=FALSE, Bivariate_Plots, fig.height=8, fig.width=8}
-corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
+corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45, title = "\nMatriz de correlação entre as variáveis")
 ```
 - Em um primeiro momento, procuramos observar quais variáveis estariam mais diretamente correlacionadas com a variável de qualidade, Analisando o gráfico e as tabelas anteriores, observa-se que a variável `quality` possui correlação com `alcohol`, `sulphates` e `citric.acid`. Por outro lado, possui uma forte correlação negativa com `volatile.acid`, o que quer dizer que tanto maior é o valor desta propriedade, menor é a qualidade do vinho. 
 
@@ -235,6 +231,8 @@ corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
 Vamos analisar alguns scatterplots, demonstrando  as propriedades de entrada em relação à variável `quality`
 
 ```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Scatterplots de cada propriedade em relação à variável ´Quality´", gp=gpar(fontface="bold"))
+
 grid.arrange(
   ggplot(data = wineDataset, aes(x = quality, y = fixed.acidity)) + geom_jitter(alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = volatile.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
@@ -247,15 +245,15 @@ grid.arrange(
   ggplot(data = wineDataset, aes(x = quality, y = pH)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = sulphates)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = alcohol)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
-  ncol=4
+  ncol=4,
+  top = title1
 )
 ```
 
 OS gráficos confirmarm visualmente algumas caracteristicas anteriormente discutidas, como a forte correlação positiva entre `alcohol` e `quality`, e a correlação negativa entre `volatile.acid` e `quality`, indicando que essa variável afeta negativamente a qualidade do vinho.
 
 
-
-# AnÃ¡lise Bivariada
+# Análise Bivariada
 
 ### Discuta sobre alguns dos relacionamentos observados nesta parte da investigação. Como os atributos de interesse variaram no conjunto de dados?
 
@@ -271,12 +269,15 @@ Com base nesses recursos, cabe destacar as variáveis com maior correlação com a 
 
 Essa correlação pode ser visualmente observada no destaque do gráfico abaixo:
 ```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Scatterplots das principais propriedades em relação à variável ´Quality´", gp=gpar(fontface="bold"))
+
 grid.arrange(
   ggplot(data = wineDataset, aes(x = quality, y = alcohol)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = volatile.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = sulphates)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = quality, y = citric.acid)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
-  ncol=2
+  ncol=2,
+  top=title1
 )
 ```
 
@@ -297,6 +298,8 @@ Há ainda correlações negativas observadas entre
 Visualmente, essas correlações podem ser representadas pelo gráfico abaixo:
 
 ```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Principais correlações entre propriedades - positivas (1a linha) e negativas (2a linha)", gp=gpar(fontface="bold"))
+
 grid.arrange(
   ggplot(data = wineDataset, aes(x = fixed.acidity, y = density)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = fixed.acidity, y = citric.acid)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
@@ -304,7 +307,8 @@ grid.arrange(
   ggplot(data = wineDataset, aes(x = pH, y = fixed.acidity)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = pH, y = citric.acid)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = density, y = alcohol)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
-  ncol=3
+  ncol=3,
+  top = title1
 )
 ```
 ### Qual foi o relacionamento mais forte encontrado?
@@ -321,6 +325,8 @@ Entre as propriedades de entrada, cabe destacar o forte relacionamento encontrad
 Visualmente, essas correlações podems er representadas pelo gráfico abaixo:
 
 ```{r echo=FALSE, Bivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Relacionamentos mais fortes entre as variáveis", gp=gpar(fontface="bold"))
+
 grid.arrange(
   ggplot(data = wineDataset, aes(x = fixed.acidity, y = pH)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = fixed.acidity, y = density)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
@@ -328,7 +334,8 @@ grid.arrange(
   ggplot(data = wineDataset, aes(x = citric.acid, y = pH)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
   ggplot(data = wineDataset, aes(x = density, y = alcohol)) + geom_jitter( alpha = .5) + geom_smooth(method='lm',color='red'),
-  ncol=3
+  ncol=3,
+  top = title1
 )
 ```
 
@@ -337,6 +344,7 @@ Nesta seção, irei analisar a relação entre diferentes características do vinho, 
 
 Primeiramente, vamos gerar o scatterplot entre a variável `alcohol` e as demais variaveis, considerando a variavel `quality`.
 ```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Correlações das propriedades analisadas com a variável ´alcohol´ em função da Qualidade ", gp=gpar(fontface="bold"))
 
 grid.arrange( 
   ggplot(aes(x = alcohol, y = fixed.acidity), data = wineDataset) + geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
@@ -350,13 +358,15 @@ grid.arrange(
   ggplot(aes(x = alcohol, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   
-  ncol=2
+  ncol=2,
+  top = title1
   
 )
 ```
 
 Plotando scatterplots de `volatile.acidity` e as demais varáveis.
 ```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob("Correlações das propriedades analisadas com a variável ´volatile.acidity´ em função da Qualidade ", gp=gpar(fontface="bold"))
 
 grid.arrange( 
   ggplot(aes(x = volatile.acidity, y = fixed.acidity), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
@@ -370,7 +380,8 @@ grid.arrange(
   ggplot(aes(x = volatile.acidity, y = pH), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   ggplot(aes(x = volatile.acidity, y = sulphates), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
   
-  ncol=2
+  ncol=2,
+  top = title1
   
 )
 ```
@@ -380,6 +391,9 @@ Destacando especialmente a relação de `alcohol` com `volatile.acid` e com `sulph
 
 
 ```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+title1 = textGrob("Correlação de `alcohol` com `volatile.acid` e com `sulphates` em relação a `quality` ", gp=gpar(fontface="bold"))
+
+
 grid.arrange(
 ggplot(aes(x = alcohol, y = volatile.acidity), data = wineDataset) +
   theme(legend.position = "bottom") +
@@ -391,7 +405,8 @@ ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +
   geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
   geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
 
-  ncol=2
+  ncol=2,
+  top = title1
 
 )
   
@@ -404,11 +419,13 @@ Observa-se uma melhor qualidade do vinho quanto mais houver `alcohol` e menos `v
 Adicionalmente, vou plotar alguns BoxPlots nara verificar a relação de `alcohol` e `volatile.acidity` com a qualidade.
 
 ```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+title1=textGrob(" BoxPlots de `alcohol` e `volatile.acidity` em relação à qualidade", gp=gpar(fontface="bold"))
+
 grid.arrange(
-  
   ggplot(data = wineDataset, aes(x = quality, y = alcohol, fill = factor(quality))) +  geom_boxplot(),
   ggplot(data = wineDataset, aes(x = quality, y = volatile.acidity, fill = factor(quality))) +  geom_boxplot(),
-  ncol=2
+  ncol=2,
+  top = title1
 )
 ```
 
@@ -417,8 +434,9 @@ No gráfico abaixo, vamos nos concentrar apenas nos vinhos de pior e de melhor qu
 ```{r echo=FALSE, Multivariate_Plots, fig.height=8, fig.width=10}
 ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
        aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
-  scale_color_brewer(type='seq', palette = 'RdBu')+
+  scale_color_brewer(type='seq', palette = 'RdBu',  guide=guide_legend(title='Qualidade'))+
   geom_smooth(se = FALSE, method='lm', color='red')+
+  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',    x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
   geom_point()
 ```
 Esse gráfico representa visualmente como a qualidade é fortemente afetada pelos atributos `alcohol` e `volatile.acidity`. Nota-se a presença das melhores avaliações (em azul) na região onde `alcohol` é alto e `volatile.acidity` e baixo. De maneira inversa, as piores avaliações de qualidade (em vermelho) situam-se na região com baixo teor de `alcohol` e maior valor de `volatile.acidity`. 
@@ -437,14 +455,17 @@ Uma interação interessante, embora não particularmente surpreendente (consideran
 Considerando um pressentimento pessoal, embora ratificando que não seja conhecedor do assunto, eu esperava identificar uma relação direta da propriedade `density` com a qualidade do vinho. Imaginando um modelo mental preconcebido, imaginava que vinhos mais densos (ditos encorpados), poderiam sugerir uma melhor qualidade. Contraditoriamente, os dados mostraram justamente uma relação inversa entre densidade e a qualidade do vinho. De forma semelhante, também esperava encontrar uma relação entre `residual.sugar` e qualidade, porém os dados confirmaram não haver correlação praticamente nenhuma entre essas variáveis, conforme novamente destacado no gráfico abaixo:
 
 ```{r echo=FALSE, Multivariate_Plots, fig.height=6, fig.width=12}
+title1=textGrob("Correlações de `density` e `residual sugar` em relação à qualidade", gp=gpar(fontface="bold"))
+
 grid.arrange(
   
 ggplot(aes(x = quality, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +theme(legend.position = "bottom") +geom_smooth(method='lm', color='red') + 
-scale_color_brewer(type='seq', palette = 'Reds'),
+scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
 
 ggplot(aes(x = quality, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) + theme(legend.position = "bottom") + geom_smooth(method='lm', color='red') + 
-scale_color_brewer(type='seq', palette = 'Reds'),
-ncol=2
+scale_color_brewer(type='seq', palette = 'Reds', guide=guide_legend(title='Qualidade')),
+ncol=2,
+top=title1
 
 )
 ```
@@ -493,11 +514,9 @@ Este gráfico já destacou, desde o princípio, a grande concentração em avaliações
 
 
 ### Segundo GrÃ¡fico
-```{r echo=FALSE, Plot_Two, fig.height=8, fig.width=8}
-corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
+```{r echo=FALSE, Plot_Two, fig.height=10, fig.width=10}
+corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45, title = "\nMatriz de correlação entre as variáveis")
 ```
-
-
 ### Descrição do Segundo Gráfico
 Esta matriz de correlação foi extremamente importante para se obter uma visão geral da forma como as variáveis estão correlacionadas. Embora eu já tivesse a tabela com os valores de correlação entre cada uma das variáveis, esse gráfico permitiu, de uma forma muito simples e intuitiva, direcionar minha atenção diretamente para as correlações mais representativas. A princípio, pude focar em quais variáveis apresentavam maior correlação com a variável de interesse `quality`. Em seguida, pude atentar para as principais correlações enter as diferentes propriedades, facilmente identificável a partir das cores e tamanhos dos itens na matriz.
 
@@ -505,18 +524,19 @@ Esta matriz de correlação foi extremamente importante para se obter uma visão ge
 ```{r echo=FALSE, Plot_Three,  fig.height=8, fig.width=10}
 ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
        aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
-  scale_color_brewer(type='seq', palette = 'RdBu')+
+  scale_color_brewer(type='seq', palette = 'RdBu',  guide=guide_legend(title='Qualidade'))+
   geom_smooth(se = FALSE, method='lm', color='red')+
+  labs(title = "Correlação de `alcohol` e `volatile.acidity` em relação à qualidade", subtitle = 'Classificações de qualidade filtradas para eliminar avaliações intermediárias',    x = "Volatile acidity (g / dm^3)", y="Alcohol (%)") +
   geom_point()
 ```
-### DescriÃ§Ã£o do Terceiro GrÃ¡fico
+### Descrição do Terceiro GrÃ¡fico
 Esse gráfico talvez seja o mais representativo da análise, à medida em que destaca as mais fortes correlações das propriedades `alcohol` e `volatile.acidity` com a qualidade do vinho. Uma vez caracterizado que essas propriedades são as que mais influenciam na qualidade final, é possível afirmar que um vinho tinto possui uma melhor qualidade a partir da combinação de uma maior concentração de `alcohol` com um menor valor de `volatile.acidity`.
 
 
 
 ------
 
-# ReflexÃ£o
+# Reflexão
 A partir dessa análise de dados exploratória, foi possível identificar, observando apenas os dados contidos nos datasets, quais as variáveis que mais influenciam para a obtenção de um vinho de melhor qualidade. Foi possível combinar a observação de coeficientes estatisticamente calculados, com sua correspondente visualização (e confirmação) em diferentes visualizações gráficas, como matrizes de correlação, scatterplots e boxplots.
 Como sou leigo no assunto vinhos, meu desconhecimento a princípio me deixou inseguro sobre minha capacidade de realizar uma análise a este respeito. Porém, os dados se mostraram suficientes para inferir observações importantes e contundentes a respeito das principais propriedades desse produto.
 
