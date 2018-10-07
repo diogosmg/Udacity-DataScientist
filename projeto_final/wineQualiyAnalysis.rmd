@@ -62,11 +62,12 @@ Primeiramente, cabe analisar o histograma para a variável `quality`.
 ```{r echo=FALSE, Univariate_Plots}
 #qplot(x = quality, data = wineDataset, bins=16)
 
-ggplot(data = wineDataset,
+grafico1 = ggplot(data = wineDataset,
        aes(x = quality)) +
   #geom_histogram(bins = 8)
   geom_bar(color = 'black',fill = I('skyblue4'))
 
+grafico1
 ```
 
 Observa-se que a curva do gráfico assemelha-se a uma distribuição normal. Cabe ressaltar, portanto, uma grande concentração de avaliações em torno das notas 5-6. Isto demonstra haver poucos exemplos de vinhos de qualidade ótima. Espero que apesar do número baixo de exemplares nessas condições, seja possível inferir as relações das propriedades que determinam esse requisito.
@@ -221,7 +222,7 @@ Segundo essa tabela, as variáveis com maior correlação com a qualidade são, nest
 
 Vamos agora buscar uma interpretação mais visual, usando uma matriz de correlações.
 
-```{r echo=FALSE, Bivariate_Plots}
+```{r echo=FALSE, Bivariate_Plots, fig.height=8, fig.width=8}
 corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
 ```
 - Em um primeiro momento, procuramos observar quais variáveis estariam mais diretamente correlacionadas com a variável de qualidade, Analisando o gráfico e as tabelas anteriores, observa-se que a variável `quality` possui correlação com `alcohol`, `sulphates` e `citric.acid`. Por outro lado, possui uma forte correlação negativa com `volatile.acid`, o que quer dizer que tanto maior é o valor desta propriedade, menor é a qualidade do vinho. 
@@ -449,37 +450,73 @@ ncol=2
 ```
 
 
-### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitaÃ§Ãµes do seu modelo.
+### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitações do seu modelo.
+Vamos experimentar a criação de um modelo linear simples para tentar predizeer a qualidade do vinho a partir de suas propriedades.
+
+```{r echo=FALSE, warning=FALSE }
+
+install.packages("randomForest", dependencies = T) 
+library(randomForest)
+fit <- randomForest(quality ~ alcohol + volatile.acidity + sulphates + chlorides + fixed.acidity + citric.acid + pH + density ,   data=wineDataset)
+print(fit) # 
+importance(fit) # importancia de cada variável para o preditor
+
+```
+
+```{r echo=FALSE, warning=FALSE }
+
+set.seed(10)
+lm1 <- lm(quality ~ alcohol + volatile.acidity + sulphates + chlorides + fixed.acidity + citric.acid + pH + density , data = wineDataset)
+print(lm1)
+summary(lm1)
+
+```   
+
+
+Tentei criar modelos de predição para a variável quality, utilizando as principais propriedades de entrada identificadas nas seções antereiores. Para isso, utilizei duas abordagens diferentes: uma regressão linear multivariável, e uma árvore de decisão RandomForest. Porém, para ambos os casos, os resultados não foram muito bons, considerando o valor final de R-squared. Porém, esse valor relativamente baixo pode ser explicado pelos gráficos Scatterplots anteriormente gerados, em que há uma distribuição muito dispersa dos valores para uma mesma qualidade, podendo influenciar assim nesse cálculo final.
+Outro problema para a geração dos modelos pode ter sido a baixa representatividade de valores para os extremos da variável quality. Ou seja, há poucos exemplos para vinhos muito bem ou muito mal avaliados (notas 3 ou 8, por exemplo), e os dados existentes podem ter sido insuficientes para que o modelo conseguisse obter uma boa generalização.
 
 ------
 
-# GrÃ¡ficos Finais e SumÃ¡rio
+# Gráficos Finais e Sumário
 
-### Primeiro GrÃ¡fico
+### Primeiro Gráfico
 ```{r echo=FALSE, Plot_One}
+grafico1
 
 ```
 
-### DescriÃ§Ã£o do Primeiro GrÃ¡fico
+### Descrição do Primeiro GrÃ¡fico
+Este primeiro gráfico pode ser considerado o mais significativo para iniciar o processo de análise, visualizando o histograma geral de observações contidas no dataset em relação à variável  `quality`.
+Este gráfico já destacou, desde o princípio, a grande concentração em avaliações medianas, com uma relativa baixa representatividade de observações para qualidades muito boas (notas 7-8), e de qualidades muito ruins (notas 3 e 4).
+
 
 
 ### Segundo GrÃ¡fico
-```{r echo=FALSE, Plot_Two}
-
+```{r echo=FALSE, Plot_Two, fig.height=8, fig.width=8}
+corrplot(res, type = "upper",  tl.col = "black", tl.srt = 45)
 ```
 
-### DescriÃ§Ã£o do Segundo GrÃ¡fico
 
+### Descrição do Segundo Gráfico
+Esta matriz de correlação foi extremamente importante para se obter uma visão geral da forma como as variáveis estão correlacionadas. Embora eu já tivesse a tabela com os valores de correlação entre cada uma das variáveis, esse gráfico permitiu, de uma forma muito simples e intuitiva, direcionar minha atenção diretamente para as correlações mais representativas. A princípio, pude focar em quais variáveis apresentavam maior correlação com a variável de interesse `quality`. Em seguida, pude atentar para as principais correlações enter as diferentes propriedades, facilmente identificável a partir das cores e tamanhos dos itens na matriz.
 
 ### Terceiro GrÃ¡fico
-```{r echo=FALSE, Plot_Three}
-
+```{r echo=FALSE, Plot_Three,  fig.height=8, fig.width=10}
+ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
+       aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
+  scale_color_brewer(type='seq', palette = 'RdBu')+
+  geom_smooth(se = FALSE, method='lm', color='red')+
+  geom_point()
 ```
-
 ### DescriÃ§Ã£o do Terceiro GrÃ¡fico
+Esse gráfico talvez seja o mais representativo da análise, à medida em que destaca as mais fortes correlações das propriedades `alcohol` e `volatile.acidity` com a qualidade do vinho. Uma vez caracterizado que essas propriedades são as que mais influenciam na qualidade final, é possível afirmar que um vinho tinto possui uma melhor qualidade a partir da combinação de uma maior concentração de `alcohol` com um menor valor de `volatile.acidity`.
+
+
 
 ------
 
 # ReflexÃ£o
-
+A partir dessa análise de dados exploratória, foi possível identificar, observando apenas os dados contidos nos datasets, quais as variáveis que mais influenciam para a obtenção de um vinho de melhor qualidade. Foi possível combinar a observação de coeficientes estatisticamente calculados, com sua correspondente visualização (e confirmação) em diferentes visualizações gráficas, como matrizes de correlação, scatterplots e boxplots.
+Como sou leigo no assunto vinhos, meu desconhecimento a princípio me deixou inseguro sobre minha capacidade de realizar uma análise a este respeito. Porém, os dados se mostraram suficientes para inferir observações importantes e contundentes a respeito das principais propriedades desse produto.
 
