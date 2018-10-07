@@ -622,3 +622,4 @@ A partir dessa análise de dados exploratória, foi possível identificar, observan
 
 Como sou leigo no assunto vinhos, meu desconhecimento a princípio me deixou inseguro sobre minha capacidade de realizar uma análise a este respeito. Porém, os dados se mostraram suficientes para inferir observações importantes e contundentes a respeito das principais propriedades desse produto.
 
+Como trabalhos futuros, acredito haver espaço para explorar melhor a geração de modelos preditivos para este dataset.
