@@ -375,29 +375,79 @@ grid.arrange(
 ```
 
 
-
-
-
+Destacando especialmente a relação de `alcohol` com `volatile.acid` e com `sulphates` em relação a `quality`
 
 
 ```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+grid.arrange(
 ggplot(aes(x = alcohol, y = volatile.acidity), data = wineDataset) +
+  theme(legend.position = "bottom") +
   geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
-  +geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds')
+  geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+  
+ggplot(aes(x = alcohol, y = sulphates), data = wineDataset) +
+  theme(legend.position = "bottom") +
+  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +
+  geom_smooth(method='lm', color='red') + scale_color_brewer(type='seq', palette = 'Reds'),
+
+  ncol=2
+
+)
   
 
 
 ```
 
+Observa-se uma melhor qualidade do vinho quanto mais houver `alcohol` e menos `volatile.acidity`. Por outro lado, uma melhor qualidade é observada quanto mais houver `sulphates` e `alcohol`.
+
+Adicionalmente, vou plotar alguns BoxPlots nara verificar a relação de `alcohol` e `volatile.acidity` com a qualidade.
+
+```{r echo=FALSE, Multivariate_Plots, fig.height=10, fig.width=12}
+grid.arrange(
+  
+  ggplot(data = wineDataset, aes(x = quality, y = alcohol, fill = factor(quality))) +  geom_boxplot(),
+  ggplot(data = wineDataset, aes(x = quality, y = volatile.acidity, fill = factor(quality))) +  geom_boxplot(),
+  ncol=2
+)
+```
+
+No gráfico abaixo, vamos nos concentrar apenas nos vinhos de pior e de melhor qualidade, descartando todas as avaliações medianas (5 e 6). O objetivo é tornar mais clara a visualização de como essas relações impactam diretamenteefetivamente na qualidade do vinho.
+
+```{r echo=FALSE, Multivariate_Plots, fig.height=8, fig.width=10}
+ggplot(data = subset(wineDataset, (quality < 5 | quality > 6) ),
+       aes(x = volatile.acidity, y = alcohol, color = factor(quality))) +
+  scale_color_brewer(type='seq', palette = 'RdBu')+
+  geom_smooth(se = FALSE, method='lm', color='red')+
+  geom_point()
+```
+Esse gráfico representa visualmente como a qualidade é fortemente afetada pelos atributos `alcohol` e `volatile.acidity`. Nota-se a presença das melhores avaliações (em azul) na região onde `alcohol` é alto e `volatile.acidity` e baixo. De maneira inversa, as piores avaliações de qualidade (em vermelho) situam-se na região com baixo teor de `alcohol` e maior valor de `volatile.acidity`. 
+Portanto, podemos notar que um vinho de melhor qualidade é obtido a partir da combinação de uma alta concentração de `alcohol` com um baixo valor de `volatile.acidity`.
 
 
+### Discuta sobre os relacionamentos observados nesta parte da investigação. Quais atributos que fortaleceram os demais na observação das variáveis de interesse?
+
+Nesta seção, fiz uso de scatterplots e boxplots para analisar as relações entre os pares das diferentes propriedades analisadas, e como essa combinação influenciam na qualidade do vinho. Como já anteriormente observado, pode se comprovar a influencia principalmente das propriedades `quality` e `volatile.acidity` para determinação da qualidade.
+Os gráficos de boxplot se mostraram particularmente úteis para confirmar as percepções observadas nos gráficos anteriores.
 
 
+### Interações surpreendentes e/ou interessantes foram encontradas entre os atributos?
+Uma interação interessante, embora não particularmente surpreendente (considerando que ela foi identificada logo no início da análise), é a forte influência do teor de álcohol para determinação de um vinho de melhor qualidade. Embora não seja conhecedor do assunto, não esperava uma relação direta tão forte.
 
+Considerando um pressentimento pessoal, embora ratificando que não seja conhecedor do assunto, eu esperava identificar uma relação direta da propriedade `density` com a qualidade do vinho. Imaginando um modelo mental preconcebido, imaginava que vinhos mais densos (ditos encorpados), poderiam sugerir uma melhor qualidade. Contraditoriamente, os dados mostraram justamente uma relação inversa entre densidade e a qualidade do vinho. De forma semelhante, também esperava encontrar uma relação entre `residual.sugar` e qualidade, porém os dados confirmaram não haver correlação praticamente nenhuma entre essas variáveis, conforme novamente destacado no gráfico abaixo:
 
-### Discuta sobre os relacionamentos observados nesta parte da investigaÃ§Ã£o. Quais atributos que fortaleceram os demais na observaÃ§Ã£o das variÃ¡veis de interesse?
+```{r echo=FALSE, Multivariate_Plots, fig.height=6, fig.width=12}
+grid.arrange(
+  
+ggplot(aes(x = quality, y = density), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) +theme(legend.position = "bottom") +geom_smooth(method='lm', color='red') + 
+scale_color_brewer(type='seq', palette = 'Reds'),
 
-### InteraÃ§Ãµes surpreendentes e/ou interessantes foram encontradas entre os atributos?
+ggplot(aes(x = quality, y = residual.sugar), data = wineDataset) +  geom_jitter(size=3, aes(color = factor(quality)), alpha = 0.25) + theme(legend.position = "bottom") + geom_smooth(method='lm', color='red') + 
+scale_color_brewer(type='seq', palette = 'Reds'),
+ncol=2
+
+)
+```
+
 
 ### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitaÃ§Ãµes do seu modelo.
 
